@@ -17,7 +17,7 @@ struct Quad {
     struct Quad* SE;
 };
 
-typedef struct {
+typedef struct RGB {
     unsigned char r;
     unsigned char g;
     unsigned char b;

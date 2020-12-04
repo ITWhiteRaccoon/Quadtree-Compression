@@ -27,22 +27,24 @@ QuadNode* newNode(int x, int y, int width, int height)
     return n;
 }
 
-QuadNode* scanImg(QuadNode* n, RGB* pixels, float minDetail)
+QuadNode* scanImg(QuadNode* n, RGB(*) pixels[], float minDetail)
 {
-    float avgR = 0, avgG = 0, avgB = 0;
+    float sumR = 0, sumG = 0, sumB = 0;
     int pixelAmt = n->width * n->height;
 
 
-    for (int i = n->y; i < n->y + n->height; ++j)
+    for (int i = n->y; i < n->y + n->height; ++i)
     {
-        for (int j = n->x; j < n->x + n->width; ++i)
+        for (int j = n->x; j < n->x + n->width; ++j)
         {
-            avgR += pixels[i][j].r;
-            avgG += pixels[i][j].g;
-            avgB += pixels[i][j].b;
+            sumR += pixels[i][j].r;
+            sumG += pixels[i][j].g;
+            sumB += pixels[i][j].b;
         }
     }
-    avgR /= pixelAmt, avgB /= pixelAmt, avgG /= pixelAmt;
+    color[0] = sumR / pixelAmt;
+    color[1] = sumG / pixelAmt;
+    color[2] = sumB / pixelAmt;
 
 
     float dif = 0;
@@ -51,21 +53,25 @@ QuadNode* scanImg(QuadNode* n, RGB* pixels, float minDetail)
         for (int j = n->x; j < n->x + n->width; ++i)
         {
             dif += sqrtf(
-                    pow(pixels[i][j].r - avgR, 2) +
-                    pow(pixels[i][j].g - avgG, 2) +
-                    pow(pixels[i][j].b - avgB, 2))
+                    pow(pixels[i][j].r - color[0], 2) +
+                    pow(pixels[i][j].g - color[1], 2) +
+                    pow(pixels[i][j].b - color[2], 2));
         }
     }
     dif /= pixelAmt;
 
     if (dif <= minDetail)
     {
-        int newX = n->width / 2;
-        int newY = n->height / 2;
-        n->NW = scanImg(newNode(), pic, minDetail, n->x, newX, n->y, newY);
-        n->SW = scanImg(newNode(), pic, minDetail, n->x, newX, n->y + newY, h - newY);
-        n->NE = scanImg(newNode(), pic, minDetail, n->x + newX, w - newX, n->y, newY);
-        n->SE = scanImg(newNode(), pic, minDetail, n->x + newX, w - newX, n->y + newY, h - newY);
+        int newW = n->width / 2;
+        int newH = n->height / 2;
+        n->NW = scanImg(newNode(n->x, n->y, newW, newH), pic, minDetail);
+        n->NE = scanImg(newNode(n->x + newW, n->y, n->width - newW, newH), pic, minDetail);
+        n->SW = scanImg(newNode(n->x, n->y + newH, newW, n->height - newH), pic, minDetail);
+        n->SE = scanImg(newNode(n->x + newW, n->y + newH, n->width - newW, n->height - newH), pic, minDetail);
+        n->status = PARCIAL;
+    } else
+    {
+        n->status = CHEIO;
     }
     return n;
 }
@@ -82,9 +88,6 @@ QuadNode* geraQuadtree(Img* pic, float minDetail)
     RGB (* pixels)[pic->width] = (RGB(*)[pic->width]) pic->img;
 
     // Veja como acessar os primeiros 10 pixels da imagem, por exemplo:
-    int i;
-    for (i = 0; i < 10; i++)
-        printf("%02X %02X %02X\n", pixels[0][i].r, pixels[1][i].g, pixels[2][i].b);
 
     int width = pic->width;
     int height = pic->height;
@@ -92,8 +95,7 @@ QuadNode* geraQuadtree(Img* pic, float minDetail)
     //////////////////////////////////////////////////////////////////////////
     // Implemente aqui o algoritmo que gera a quadtree, retornando o nodo raiz
     //////////////////////////////////////////////////////////////////////////
-    QuadNode* raiz = newNode(0, 0, width, height);
-    scanImg(raiz, pixels, minDetail, 0, width, 0, height);
+    QuadNode* raiz = scanImg(newNode(0, 0, width, height), &pixels, minDetail);
 
 // COMENTE a linha abaixo quando seu algoritmo ja estiver funcionando
 // Caso contrario, ele ira gerar uma arvore de teste com 3 nodos
@@ -105,7 +107,7 @@ QuadNode* geraQuadtree(Img* pic, float minDetail)
     /* Teste: criando uma raiz e dois nodos a mais              */
     /************************************************************/
 
-    QuadNode* raiz = newNode(0, 0, width, height);
+    raiz = newNode(0, 0, width, height);
     raiz->status = PARCIAL;
     raiz->color[0] = 0;
     raiz->color[1] = 0;
