@@ -5,34 +5,24 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Build and debug",
+            "name": "(gdb) Launch",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/loader",
-            "args": ["british_summer.jpg"],
+            "program": "${workspaceFolder}/quadtree.exe",
+            "args": ["teste.png"],
             "stopAtEntry": false,
             "cwd": "${workspaceFolder}",
             "environment": [],
             "externalConsole": false,
-            "linux": {
-                "MIMode": "gdb",
-                "miDebuggerPath": "/usr/bin/gdb"
-            },
-            "osx": {
-                "MIMode": "lldb"
-            },
-            "windows": {
-                "MIMode": "gdb",
-                "miDebuggerPath": "gdb.exe"
-            },
+            "MIMode": "gdb",
+            //"miDebuggerPath": "/path/to/gdb",
             "setupCommands": [
                 {
-                    "description": "Habilitar a reformatação automática para gdb",
+                    "description": "Enable pretty-printing for gdb",
                     "text": "-enable-pretty-printing",
                     "ignoreFailures": true
                 }
-            ],
-            "preLaunchTask": "build"
+            ]
         }
     ]
 }
