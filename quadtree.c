@@ -204,27 +204,28 @@ void drawNode(QuadNode *n)
         glBegin(GL_QUADS);
         glColor3ubv(n->color);
         glVertex2f(n->x, n->y);
-        glVertex2f(n->x + n->width - 1, n->y);
-        glVertex2f(n->x + n->width - 1, n->y + n->height - 1);
-        glVertex2f(n->x, n->y + n->height - 1);
+        glVertex2f(n->x + n->width, n->y);
+        glVertex2f(n->x + n->width, n->y + n->height);
+        glVertex2f(n->x, n->y + n->height);
         glEnd();
     }
+
     else if (n->status == PARCIAL)
     {
-        if (desenhaBorda)
-        {
-            glBegin(GL_LINE_LOOP);
-            glColor3ubv(n->color);
-            glVertex2f(n->x, n->y);
-            glVertex2f(n->x + n->width - 1, n->y);
-            glVertex2f(n->x + n->width - 1, n->y + n->height - 1);
-            glVertex2f(n->x, n->y + n->height - 1);
-            glEnd();
-        }
         drawNode(n->NE);
         drawNode(n->NW);
         drawNode(n->SE);
         drawNode(n->SW);
     }
+        if (desenhaBorda)
+        {
+            glBegin(GL_LINE_LOOP);
+            glColor3ub(0,0,0);
+            glVertex2f(n->x, n->y);
+            glVertex2f(n->x + n->width, n->y);
+            glVertex2f(n->x + n->width, n->y + n->height);
+            glVertex2f(n->x, n->y + n->height);
+            glEnd();
+        }
     // Nodos vazios não precisam ser desenhados... nem armazenados!
 }
